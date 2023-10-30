@@ -1,0 +1,37 @@
+name: 'ServiceNow DevOps Unit Test Results'
+description: 'Register JUnit Test Results in ServiceNow'
+inputs:
+  devops-integration-user-name:
+    description: 'Devops Integration User Name'
+    required: false
+  devops-integration-user-password:
+    description: 'Devops Integration User Password'
+    required: false
+  devops-integration-token:
+    description: 'Devops Security Token'
+    required: false
+  instance-url: 
+    description: 'ServiceNow Instance Name'
+    required: true
+  tool-id:
+    description: 'Orchestration Tool Id'
+    required: true
+  job-name:
+    description: 'Job Name'
+    required: true
+  context-github:
+    description: 'Github Context'
+    required: true
+  xml-report-filename:
+    description: 'JUnit xml report file name with path'
+    required: true
+  test-type:
+    description: 'GitHub Custom Action'
+    required: false
+    default: 'JUnit'
+branding:
+  icon: 'refresh-ccw'
+  color: 'green'
+runs: 
+  using: 'node16'
+  main: 'dist/index.js'
