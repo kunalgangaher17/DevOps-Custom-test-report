@@ -109,6 +109,7 @@ const axios = require('axios');
     let payload;
     
     try {
+        
         instanceUrl = instanceUrl.trim();
         if (instanceUrl.endsWith('/'))
             instanceUrl = instanceUrl.slice(0, -1);
