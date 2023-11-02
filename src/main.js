@@ -72,10 +72,14 @@ const axios = require('axios');
                 }
             });
         } else {
+            console.log('Inside else');
             xmlData = fs.readFileSync(xmlReportFile, 'utf8');
+            console.log(`After readFileSync :${xmlData}`);
             //convert xml to json
             xml2js.parseString(xmlData, (err, result) => {
+                console.log(`Inside parseString :${result}`);
                 if (err) {
+                    console.log(`Before throw :${err}`);
                     throw err;
                 }
                 // 'result' is a JavaScript object
@@ -109,7 +113,7 @@ const axios = require('axios');
     let payload;
     
     try {
-        
+
         instanceUrl = instanceUrl.trim();
         if (instanceUrl.endsWith('/'))
             instanceUrl = instanceUrl.slice(0, -1);
