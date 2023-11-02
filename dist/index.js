@@ -11808,7 +11808,7 @@ const axios = __nccwpck_require__(992);
             let filenames = fs.readdirSync(xmlReportFile);
             console.log("\nTest Reports directory files:");
             filenames.forEach(file => {
-                let filePath = xmlReportFile + file;
+                let filePath = xmlReportFile + '/' + file;
                 if (file.endsWith('.xml')) {
                     console.log('Parsing XML file path to prepare summaries payload: ' +filePath);
                     xmlData = fs.readFileSync(filePath, 'utf8');
@@ -11820,23 +11820,32 @@ const axios = __nccwpck_require__(992);
                         // convert it to a JSON string
                         jsonData = JSON.stringify(result, null, 4);
                         let parsedJson = JSON.parse(jsonData);
-                        let parsedresponse = parsedJson["testsuite"];
-                        let summaryObj = parsedresponse.$;
-                        packageName = summaryObj.name.replace(/\.[^.]*$/g,'');
+                        let summaryObj;
+                        if(xmlData.includes('testsuites')){
+                            let parsedresponse = parsedJson["testsuites"];
+                            for(var i = 0; i < parsedresponse.testsuite.length; i++){
+                                summaryObj = parsedresponse.testsuite[i].$;
+                                totalTests = totalTests + parseInt(summaryObj.tests);
+                                failedTests = failedTests + parseInt(summaryObj.failures);
+                                ignoredTests = ignoredTests + parseInt(summaryObj.errors);
+                                skippedTests = skippedTests + parseInt(summaryObj.skipped);
+                                totalDuration = totalDuration + parseInt(summaryObj.time);
+                                passedTests = totalTests - (failedTests + ignoredTests + skippedTests);
+                            }
+                        }
+                        else if(xmlData.includes('testsuite')){
+                            let parsedresponse = parsedJson["testsuite"];
+                            summaryObj = parsedresponse.$;
+                            totalTests = totalTests + parseInt(summaryObj.tests);
+                            failedTests = failedTests + parseInt(summaryObj.failures);
+                            ignoredTests = ignoredTests + parseInt(summaryObj.errors);
+                            skippedTests = skippedTests + parseInt(summaryObj.skipped);
+                            totalDuration = totalDuration + parseInt(summaryObj.time);
+                            passedTests = totalTests - (failedTests + ignoredTests + skippedTests);
+                            
+                        }
 
-                        let tests = parseInt(summaryObj.tests);
-                        let failed = parseInt(summaryObj.failures);
-                        let ignored = parseInt(summaryObj.errors);
-                        let skipped = parseInt(summaryObj.skipped);
-                        let duration = parseInt(summaryObj.time);
-                        let passed = tests - (failed + ignored + skipped);
-
-                        totalTests += tests;
-                        passedTests += passed;
-                        skippedTests += skipped;
-                        ignoredTests += ignored;
-                        failedTests += failed;
-                        totalDuration += duration;
+                        packageName = summaryObj.name.replace(/\.[^.]*$/g, '');
                     });
                 }
             });
@@ -11958,12 +11967,10 @@ const axios = __nccwpck_require__(992);
             core.setFailed('Invalid Credentials. Please correct the credentials and try again.');
         } else {
             core.setFailed(`ServiceNow Test Results are NOT created. Please check ServiceNow logs for more details.`);
-            core.setFailed('[ServiceNow DevOps] Test Report. Error log :'+e.message);
         }
     }
     
 })();
-
 })();
 
 module.exports = __webpack_exports__;
